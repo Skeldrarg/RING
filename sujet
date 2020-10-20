@@ -1,0 +1,113 @@
+RING
+
+1  Description du jeu
+
+1.1  Description des combattants
+
+Les combattants peuvent être de trois types :
+    guerrier
+    athlète
+    magicien
+    
+Tous les combattants du jeu sont caractérisés par :
+    un nom
+    une force physique
+    une dextérité
+    une intelligence
+    une capacité de concentration
+    une vitalité
+    une expérience
+    
+La vitalité d’un personnage est son nombre de points de vie. Ce nombre décroit au fur et à mesure qu’un personnage est blessé au combat. Le personnage meurt quand sa vitalité devient nulle. L’expérience d’un combattant augmente quand il gagne un combat et décroit quand il perd, avec une valeur plancher et une valeur plafond.
+
+                 |
+Caractéristiques | FOR + DEX + INT + CON <= 100 + EXP
+    communes     | 1 <= EXP <= 20
+                 | VIT = 200 - (FOR + DEX + INT + CON) + EXP * 3
+-----------------+------------------------------------------------
+                 |
+    Guerrier     | FOR >= (DEX + 10) >= (INT + 10) >= CON
+                 |
+-----------------+------------------------------------------------
+                 |
+    Magicien     |  INT >= max(FOR,DEX) + 15
+                 |   CON >= max(FOR,DEX) + 15
+                 |
+-----------------+------------------------------------------------
+                 | FOR >= 20
+    Athlète      | DEX >= 20
+                 | INT >= 20
+                 | CON >= 20
+
+
+1.2  Description des capacités
+
+Les capacités permettent aux combattants de porter des coups, de parer des coups et de se soigner. Elles se subdivisent en trois catégories :
+    attaque
+    parade
+    soin
+
+Le nombre de capacités d’un combattant doit être inférieur à son niveau d’expérience divisé par deux, mais ne peut descendre en dessous de deux.
+Toutes les capacités fonctionnent selon le même principe :
+    
+    1.  Vérifier sa réussite – La probabilité de réussite de la mise-en-œvre d’une capacité est fonction de l’aptitude du combattant ainsi que des caractéristiques de la capacité.
+    
+    2.  Mesurer  l’efficacité  –  Si  la  mise en oeuvre  d’une  capacité  a  réussi,  son  efficacité  est  fonction  de l’aptitude du combattant ainsi que des caractéristiques de la capacité, sinon son efficacité est nulle bien entendu.
+    
+Les capacités possèdent un certain nombre de caractéristiques de type entier. La somme de ces caractéristiques doit toujours être égale à 100 et aucune caractéristiques ne peut être inférieure à 20.
+
+   Nom    | Catégorie | Caractéristiques  |     Probabilité de réussite      |              Impact              | Description
+----------+-----------+-------------------+----------------------------------+----------------------------------+--------------------------------------
+          |           |                   | Attaque :                        | Attaque :                        | À la fois arme offensive et
+   Epée   |  Attaque  |   Impact, Parade  | Dextérité * Maniabilité / 10000  | Force * Impact / 100             | défensive son efficacité est 
+          |  Parade   |   Maniabilité     | Parade :                         | Parade :                         | divisée par 3 en cas de
+          |           |                   | Dextérité * Maniabilité / 10000  | Force * Parade / 100             | parade d’un sortilège
+----------+-----------+-------------------+----------------------------------+----------------------------------+--------------------------------------
+          |           |                   |                                  |                                  |
+  Sort    |  Attaque  |     Facilité      | Concentration * facilité / 10000 | Intelligence * Efficacité / 100  | C'est l'arme des magiciens
+d'attaque |           |    Efficacité     |                                  |                                  |
+          |           |                   |                                  |                                  |
+----------+-----------+-------------------+----------------------------------+----------------------------------+--------------------------------------
+          |           |                   |                                  |                                  |
+ Bouclier |  Parade   |    Maniabilité    | Dextérité * Maniabilité / 10000  | Force * Protection / 100         | Son efficacité est divisée par 3
+          |           |    Protection     |                                  |                                  | si l'attaque est un sortilège
+          |           |                   |                                  |                                  |
+----------+-----------+-------------------+----------------------------------+----------------------------------+--------------------------------------
+          |           |                   |                                  |                                  | Bouclier des attaques magiques,
+ Sort de  |  Parade   |     Facilité      | Concentration * facilité / 10000 |  Intelligence * Efficacité / 100 | son efficacité est divisée par 3
+ Défense  |           |    Efficacité     |                                  |                                  | si l'attaque ne l'est pas
+          |           |                   |                                  |                                  |
+----------+-----------+-------------------+----------------------------------+----------------------------------+--------------------------------------
+          |           |                   |                                  |                                  |
+  Potion  |   Soin    |     Facilité      | Dextérité * Maniabilité / 10000  | Dextérité * Efficacité / 100     | Attention, c'est de l'automédication
+          |           |    Efficacité     |                                  |                                  |
+          |           |                   |                                  |                                  |
+----------+-----------+-------------------+----------------------------------+----------------------------------+--------------------------------------
+          |           |                   |                                  |                                  |
+  Sort de |   Soin    |     Facilité      | Concentration * facilité / 10000 |  Intelligence * Efficacité / 100 | C'est le remèdes des magiciens
+   soin   |           |    Efficacité     |                                  |                                  |
+          |           |                   |                                  |                                  |
+
+1.4  Déroulement d’un duel
+
+Un duel se déroule par tour de jeu.
+Un tour de jeu ne concerne qu’un seul combattant.
+De manière générale, un tour de jeu permet de faire 2 actions. Une action est la mise-en-œuvre d’une capacité, ou une capitulation. Une capitulation met fin à la partie sans qu’aucun combattant ne décède.
+Un exemple de tour de jeu classique comprend une parade et une attaque.
+Il est raisonnable de placer deux attaques si l’adversaire n’a pas réussi à en concrétiser une.
+Un duel se déroule de la manière qui suit.
+
+Initialisation du duel
+    1.  Calculer et affecter la vitalité à chacun des participants
+    2.  Déterminer qui commence : c’est le plus expérimenté, ou le gagnant d’un tirage au sort en cas de niveau d’expérience identique.
+
+Premier tour de jeux
+    3.  Le combattant qui commence met en œuvre une capacité de son choix (généralement une attaque), la réussite et l’efficacité de cette capacité sont évaluées, affichées et appliquées dans le cas d’un soin
+    4.  L’efficacité d’une attaque réussie est mémorisée pour impacter l’adversaire lors de son tour de jeu
+
+Tour de jeu classique
+    5.  Le combattant met en œuvre une capacité de son choix (par exemple une parade), la réussite et l’efficacité de cette capacité sont évaluées, affichées et appliquées dans le cas d’un soin ou d’une parade; le combattant peut également capituler
+    6.  Même déroulement que l’étape précédente (étape 5)
+    7.  Le combattant perd autant de points de vie qu’il n’a pu parer, si sa vitalité devient nulle, le combattant décède et perd la partie
+    8.  Si la partie n’est pas terminée, la somme de l’efficacité des attaques du combattant est mémorisée pour impacter l’adversaire lors de son tour de jeu
+    9.  C’est au tour de jeu de l’adversaire en reprenant le déroulement à l’étape 5
